@@ -1,15 +1,31 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   utils.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pdavi-al <pdavi-al@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/07/25 21:47:01 by pdavi-al          #+#    #+#             */
+/*   Updated: 2023/07/25 22:23:37 by pdavi-al         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex.h"
 
 void	invalid_args(void)
 {
 	ft_putendl_fd("Error: Invalid parameters!\n", STD_ERROR);
-	ft_putendl_fd("Usage: ./pipex <path_to_infile> <cmd1> <cmd2> <path_to_outfile>\n", STD_ERROR);
-	ft_putendl_fd("Please make sure to provide the correct parameters:", STD_ERROR);
+	ft_putendl_fd("Usage: ./pipex <path_infile> <cmd1> <cmd2> <path_outfile>\n",
+					STD_ERROR);
+	ft_putendl_fd("Please make sure to provide the correct parameters:",
+					STD_ERROR);
 	ft_putendl_fd("<path_to_infile>: The path to the input file.", STD_ERROR);
 	ft_putendl_fd("<cmd1>: The first command to be executed.", STD_ERROR);
 	ft_putendl_fd("<cmd2>: The second command to be executed.", STD_ERROR);
-	ft_putendl_fd("<path_to_outfile>: The path to the output file.\n", STD_ERROR);
-	ft_putendl_fd("Example: ./pipex input.txt grep hello sort output.txt", STD_ERROR);
+	ft_putendl_fd("<path_to_outfile>: The path to the output file.\n",
+					STD_ERROR);
+	ft_putendl_fd("Example: ./pipex input.txt grep hello sort output.txt",
+					STD_ERROR);
 	exit(EXIT_FAILURE);
 }
 
@@ -18,9 +34,9 @@ int	open_file(char *file, int in_or_out)
 	int	ret;
 
 	if (in_or_out == 0)
-		ret = open(file, O_RDONLY, 0777);
+		ret = open(file, O_RDONLY);
 	else
-		ret = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0777);
+		ret = open(file, O_WRONLY | O_CREAT | O_TRUNC, 0644);
 	if (ret == -1)
 		exit(EXIT_FAILURE);
 	return (ret);
@@ -59,7 +75,10 @@ char	*get_path(char *cmd, char **env)
 	char	**cmds;
 
 	i = -1;
-	path = ft_split(find_path(env), ':');
+	path_dir = find_path(env);
+	if (path_dir == NULL)
+		return (cmd);
+	path = ft_split(path_dir, ':');
 	cmds = ft_split(cmd, ' ');
 	while (path[++i])
 	{

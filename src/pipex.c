@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   pipex.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: pdavi-al <pdavi-al@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2023/07/25 21:47:06 by pdavi-al          #+#    #+#             */
+/*   Updated: 2023/07/25 22:26:19 by pdavi-al         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "pipex.h"
 
 int	main(int argc, char **argv, char **env)
@@ -24,7 +36,7 @@ void	exec(char *cmd, char **env)
 	char	**cmds;
 
 	cmds = ft_split(cmd, ' ');
-	if (ft_strchr(cmd, '/') == NULL)
+	if (ft_strchr(cmds[0], '/') == NULL)
 		path = get_path(cmds[0], env);
 	else
 		path = cmds[0];
@@ -33,7 +45,7 @@ void	exec(char *cmd, char **env)
 		ft_putstr_fd("pipex: command not found: ", STD_ERROR);
 		ft_putendl_fd(cmds[0], STD_ERROR);
 		free_str_array(cmds);
-		exit(COMAND_NOT_FOUND);
+		exit(COMMAND_NOT_FOUND);
 	}
 	execve(path, cmds, env);
 	ft_putendl_fd(strerror(errno), STD_ERROR);
@@ -42,7 +54,7 @@ void	exec(char *cmd, char **env)
 
 void	child(char **argv, int *pipedes, char **env)
 {
-	int		fd;
+	int	fd;
 
 	fd = open_file(argv[1], 0);
 	dup2(fd, STD_INPUT);
@@ -53,7 +65,7 @@ void	child(char **argv, int *pipedes, char **env)
 
 void	parent(char **argv, int *pipedes, char **env)
 {
-	int		fd;
+	int	fd;
 
 	fd = open_file(argv[4], 1);
 	dup2(fd, STD_OUTPUT);
