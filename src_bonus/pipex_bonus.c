@@ -1,33 +1,44 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   pipex.c                                            :+:      :+:    :+:   */
+/*   pipex_bonus.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/07/25 21:47:06 by pdavi-al          #+#    #+#             */
-/*   Updated: 2023/07/27 06:28:04 by cobli            ###   ########.fr       */
+/*   Created: 2023/07/27 03:27:00 by cobli             #+#    #+#             */
+/*   Updated: 2023/07/27 06:22:41 by cobli            ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "pipex.h"
+#include "pipex_bonus.h"
 
 int	main(int argc, char **argv, char **env)
 {
-	int		pipedes[2];
-	pid_t	pid;
+	int	current_cmd;
+	int	fd_in;
+	int	fd_out;
 
-	if (argc != 5)
+	if (argc < 5)
 		invalid_args();
-	if (pipe(pipedes) == -1)
-		exit(EXIT_FAILURE);
-	pid = fork();
-	if (pid == -1)
-		exit(EXIT_FAILURE);
-	if (!pid)
-		child(argv, pipedes, env);
-	waitpid(pid, NULL, WNOHANG);
-	parent(argv, pipedes, env);
+	if (ft_strncmp(argv[1], HERE_DOC_STR, ft_strlen(HERE_DOC_STR)) == 0)
+	{
+		if (argc < 6)
+			invalid_here_doc_args();
+		current_cmd = START_CMD_HERE_DOC;
+		fd_out = open_file(argv[argc - 1], 2);
+		here_doc(argv);
+	}
+	else
+	{
+		current_cmd = START_CMD;
+		fd_in = open_file(argv[1], 0);
+		fd_out = open_file(argv[argc - 1], 1);
+		dup2(fd_in, STD_INPUT);
+	}
+	while (current_cmd < argc - 2)
+		do_pipe(argv[current_cmd++], env);
+	dup2(fd_out, STD_OUTPUT);
+	exec(argv[current_cmd], env);
 }
 
 void	exec(char *cmd, char **env)
@@ -52,24 +63,25 @@ void	exec(char *cmd, char **env)
 	exit(errno);
 }
 
-void	child(char **argv, int *pipedes, char **env)
+void	do_pipe(char *cmd, char **env)
 {
-	int	fd;
+	pid_t	pid;
+	int		pipedes[2];
 
-	fd = open_file(argv[1], 0);
-	dup2(fd, STD_INPUT);
-	dup2(pipedes[1], STD_OUTPUT);
-	close(pipedes[0]);
-	exec(argv[2], env);
-}
-
-void	parent(char **argv, int *pipedes, char **env)
-{
-	int	fd;
-
-	fd = open_file(argv[4], 1);
-	dup2(fd, STD_OUTPUT);
-	dup2(pipedes[0], STD_INPUT);
-	close(pipedes[1]);
-	exec(argv[3], env);
+	if (pipe(pipedes) == -1)
+		exit(EXIT_FAILURE);
+	pid = fork();
+	if (pid == -1)
+		exit(EXIT_FAILURE);
+	if (!pid)
+	{
+		close(pipedes[0]);
+		dup2(pipedes[1], STD_OUTPUT);
+		exec(cmd, env);
+	}
+	else
+	{
+		close(pipedes[1]);
+		dup2(pipedes[0], STD_INPUT);
+	}
 }
