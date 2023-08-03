@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.h                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pdavi-al <pdavi-al@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 21:49:18 by pdavi-al          #+#    #+#             */
-/*   Updated: 2023/07/27 06:30:15 by cobli            ###   ########.fr       */
+/*   Updated: 2023/08/02 20:59:36 by pdavi-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,11 +30,17 @@
 # define COMMAND_NOT_FOUND 127
 # define PATH_STR "PATH="
 
+typedef enum e_file_type
+{
+	INFILE,
+	OUTFILE,
+}		t_file_type;
+
 void	exec(char *cmd, char **env);
 void	child(char **argv, int *pipedes, char **env);
 void	parent(char **argv, int *pipedes, char **env);
 void	invalid_args(void);
-int		open_file(char *file, int in_or_out);
+int		open_file(char *file, t_file_type file_type);
 char	*get_path(char *cmd, char **env);
 
 #endif

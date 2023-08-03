@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   pipex.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: cobli <cobli@student.42.fr>                +#+  +:+       +#+        */
+/*   By: pdavi-al <pdavi-al@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 21:47:06 by pdavi-al          #+#    #+#             */
-/*   Updated: 2023/07/27 06:28:04 by cobli            ###   ########.fr       */
+/*   Updated: 2023/08/02 21:28:55 by pdavi-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,13 +20,19 @@ int	main(int argc, char **argv, char **env)
 	if (argc != 5)
 		invalid_args();
 	if (pipe(pipedes) == -1)
-		exit(EXIT_FAILURE);
+	{
+		perror(NULL);
+		exit(errno);
+	}
 	pid = fork();
 	if (pid == -1)
-		exit(EXIT_FAILURE);
+	{
+		perror(NULL);
+		exit(errno);
+	}
 	if (!pid)
 		child(argv, pipedes, env);
-	waitpid(pid, NULL, WNOHANG);
+	waitpid(pid, NULL, 0);
 	parent(argv, pipedes, env);
 }
 
@@ -48,7 +54,9 @@ void	exec(char *cmd, char **env)
 		exit(COMMAND_NOT_FOUND);
 	}
 	execve(path, cmds, env);
-	ft_putendl_fd(strerror(errno), STD_ERROR);
+	free(path);
+	ft_free_split(cmds);
+	perror(NULL);
 	exit(errno);
 }
 
@@ -56,7 +64,7 @@ void	child(char **argv, int *pipedes, char **env)
 {
 	int	fd;
 
-	fd = open_file(argv[1], 0);
+	fd = open_file(argv[1], INFILE);
 	dup2(fd, STD_INPUT);
 	dup2(pipedes[1], STD_OUTPUT);
 	close(pipedes[0]);
@@ -67,7 +75,7 @@ void	parent(char **argv, int *pipedes, char **env)
 {
 	int	fd;
 
-	fd = open_file(argv[4], 1);
+	fd = open_file(argv[4], OUTFILE);
 	dup2(fd, STD_OUTPUT);
 	dup2(pipedes[0], STD_INPUT);
 	close(pipedes[1]);
