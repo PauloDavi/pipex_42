@@ -6,7 +6,7 @@
 /*   By: pdavi-al <pdavi-al@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 21:49:18 by pdavi-al          #+#    #+#             */
-/*   Updated: 2023/08/02 20:59:36 by pdavi-al         ###   ########.fr       */
+/*   Updated: 2023/08/02 22:10:46 by pdavi-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ void	exec(char *cmd, char **env);
 void	child(char **argv, int *pipedes, char **env);
 void	parent(char **argv, int *pipedes, char **env);
 void	invalid_args(void);
-int		open_file(char *file, t_file_type file_type);
+int		open_file(char *file, t_file_type f);
 char	*get_path(char *cmd, char **env);
 
 #endif

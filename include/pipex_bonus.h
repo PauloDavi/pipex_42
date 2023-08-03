@@ -6,7 +6,7 @@
 /*   By: pdavi-al <pdavi-al@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 03:26:30 by pdavi-al          #+#    #+#             */
-/*   Updated: 2023/08/02 20:45:22 by pdavi-al         ###   ########.fr       */
+/*   Updated: 2023/08/02 22:21:56 by pdavi-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,12 +33,19 @@
 # define COMMAND_NOT_FOUND 127
 # define PATH_STR "PATH="
 
+typedef enum e_file_type
+{
+	INFILE,
+	OUTFILE_TRUNC,
+	OUTFILE_APPEND,
+}		t_file_type;
+
 void	invalid_args(void);
 void	invalid_here_doc_args(void);
 void	here_doc(char **argv);
 void	exec(char *cmd, char **env);
 void	do_pipe(char *cmd, char **env);
-int		open_file(char *file, int in_or_out);
+int		open_file(char *file, t_file_type file_type);
 char	*get_path(char *cmd, char **env);
 
 #endif

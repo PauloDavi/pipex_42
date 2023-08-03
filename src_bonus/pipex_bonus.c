@@ -6,7 +6,7 @@
 /*   By: pdavi-al <pdavi-al@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 03:27:00 by pdavi-al          #+#    #+#             */
-/*   Updated: 2023/08/02 20:46:24 by pdavi-al         ###   ########.fr       */
+/*   Updated: 2023/08/02 22:15:22 by pdavi-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,14 +25,14 @@ int	main(int argc, char **argv, char **env)
 		if (argc < 6)
 			invalid_here_doc_args();
 		current_cmd = START_CMD_HERE_DOC;
-		fd_out = open_file(argv[argc - 1], 2);
+		fd_out = open_file(argv[argc - 1], OUTFILE_APPEND);
 		here_doc(argv);
 	}
 	else
 	{
 		current_cmd = START_CMD;
-		fd_in = open_file(argv[1], 0);
-		fd_out = open_file(argv[argc - 1], 1);
+		fd_in = open_file(argv[1], INFILE);
+		fd_out = open_file(argv[argc - 1], OUTFILE_TRUNC);
 		dup2(fd_in, STD_INPUT);
 	}
 	while (current_cmd < argc - 2)
@@ -59,7 +59,9 @@ void	exec(char *cmd, char **env)
 		exit(COMMAND_NOT_FOUND);
 	}
 	execve(path, cmds, env);
-	ft_putendl_fd(strerror(errno), STD_ERROR);
+	free(path);
+	ft_free_split(cmds);
+	perror(NULL);
 	exit(errno);
 }
 
@@ -69,10 +71,16 @@ void	do_pipe(char *cmd, char **env)
 	int		pipedes[2];
 
 	if (pipe(pipedes) == -1)
-		exit(EXIT_FAILURE);
+	{
+		perror(NULL);
+		exit(errno);
+	}
 	pid = fork();
 	if (pid == -1)
-		exit(EXIT_FAILURE);
+	{
+		perror(NULL);
+		exit(errno);
+	}
 	if (!pid)
 	{
 		close(pipedes[0]);

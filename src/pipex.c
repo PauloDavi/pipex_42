@@ -6,7 +6,7 @@
 /*   By: pdavi-al <pdavi-al@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/25 21:47:06 by pdavi-al          #+#    #+#             */
-/*   Updated: 2023/08/02 21:28:55 by pdavi-al         ###   ########.fr       */
+/*   Updated: 2023/08/02 21:43:16 by pdavi-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	main(int argc, char **argv, char **env)
 	}
 	if (!pid)
 		child(argv, pipedes, env);
-	waitpid(pid, NULL, 0);
+	waitpid(pid, NULL, WNOHANG);
 	parent(argv, pipedes, env);
 }
 

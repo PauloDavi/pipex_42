@@ -6,7 +6,7 @@
 /*   By: pdavi-al <pdavi-al@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/07/27 06:01:13 by pdavi-al          #+#    #+#             */
-/*   Updated: 2023/08/02 20:46:06 by pdavi-al         ###   ########.fr       */
+/*   Updated: 2023/08/02 22:11:13 by pdavi-al         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,16 @@ void	here_doc(char **argv)
 	pid_t	pid;
 
 	if (pipe(pipedes) == -1)
-		exit(0);
+	{
+		perror(NULL);
+		exit(errno);
+	}
 	pid = fork();
 	if (pid == -1)
-		exit(0);
+	{
+		perror(NULL);
+		exit(errno);
+	}
 	if (!pid)
 		here_doc_put_in(argv, pipedes);
 	else
@@ -49,7 +55,7 @@ static void	here_doc_put_in(char **argv, int *pipedes)
 		if (ft_strncmp(line, limiter, limiter_len) == 0)
 		{
 			free(line);
-			exit(EXIT_FAILURE);
+			exit(EXIT_SUCCESS);
 		}
 		ft_putstr_fd(line, pipedes[1]);
 		free(line);
