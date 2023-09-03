@@ -3,9 +3,11 @@ vpath %.c src_bonus
 
 NAME := pipex
 CFLAGS := -Wextra -Wall -Werror
-CFLAGS +=-O3 -march=native -funroll-loops -finline-functions -flto
+CFLAGS += -O3 -g3
+
 LIBTF := ./lib/libft
 LIBS := -L$(LIBTF) -lft
+
 OBJ_DIR := build
 INCLUDE_DIR := include
 INCLUDES := -I$(INCLUDE_DIR) -I$(LIBTF)
